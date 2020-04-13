@@ -3,13 +3,12 @@
 namespace App\Command;
 
 use App\Service\Provider\CurrencyProviderInterface;
-use App\Task\TaskMessageInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\HttpKernel\Log\Logger;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * Class GetKUNAMarketData
@@ -33,16 +32,22 @@ class GetKUNAMarketData extends Command
     private $logger;
 
     /**
+     * @var MessageBusInterface
+     */
+    private $bus;
+
+    /**
      * GetKUNAMarketData constructor.
      * @param CurrencyProviderInterface $currencyProvider
      * @param LoggerInterface $logger
+     * @param MessageBusInterface $bus
      */
-    public function __construct(CurrencyProviderInterface $currencyProvider, LoggerInterface $logger)
+    public function __construct(CurrencyProviderInterface $currencyProvider, LoggerInterface $logger, MessageBusInterface $bus)
     {
+        parent::__construct();
         $this->kunaProvider = $currencyProvider;
         $this->logger = $logger;
-
-        parent::__construct();
+        $this->bus = $bus;
     }
 
     /**
@@ -54,12 +59,17 @@ class GetKUNAMarketData extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
-        $output->writeln('Get kuna data:');
-
         try {
-            $this->kunaProvider->getOLHC('btcusd');
+            $ohlcDtoCollection = $this->kunaProvider->getOLHC();
+
+            $this->bus->dispatch($ohlcDtoCollection);
+
+            $output->writeln('Kuna data was sent to the buffer.');
+
         } catch (Exception $e) {
-            $this->logger->error('Error: ' . $e->getMessage() . 'Trace: ' . $e->getTraceAsString());
+            $this->logger->error('Error when parsing kuna data: \r\n'
+                            . 'Error: ' . $e->getMessage() . '\r\n'
+                            . 'Trace: ' . $e->getTraceAsString());
             $output->writeln(['Error:', $e->getMessage(), $e->getCode(), $e->getFile(), $e->getLine()]);
         }
     }

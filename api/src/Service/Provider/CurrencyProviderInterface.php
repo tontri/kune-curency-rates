@@ -2,14 +2,13 @@
 
 namespace App\Service\Provider;
 
-use App\Dto\OHLC;
+use App\Service\Mapper\OhlcDtoCollection;
 
 interface CurrencyProviderInterface
 {
     /**
-     * @param string $symbol
-     * @return OHLC
+     * @return OhlcDtoCollection
      */
-    public function getOLHC(string $symbol): OHLC;
+    public function getOLHC(): OhlcDtoCollection;
 
 }

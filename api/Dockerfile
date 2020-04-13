@@ -19,6 +19,9 @@ RUN apk add --no-cache \
 		file \
 		gettext \
 		git \
+		autoconf \
+		gcc \
+		build-base \
 	;
 
 ARG APCU_VERSION=5.1.18
@@ -29,21 +32,25 @@ RUN set -eux; \
 		libzip-dev \
 		postgresql-dev \
 		zlib-dev \
+		librdkafka-dev \
 	; \
 	\
 	docker-php-ext-configure zip; \
 	docker-php-ext-install -j$(nproc) \
 		intl \
 		pdo_pgsql \
+		pdo_mysql \
 		zip \
 	; \
 	pecl install \
 		apcu-${APCU_VERSION} \
+        rdkafka \
 	; \
 	pecl clear-cache; \
 	docker-php-ext-enable \
 		apcu \
 		opcache \
+		rdkafka \
 	; \
 	\
 	runDeps="$( \
@@ -59,6 +66,7 @@ RUN set -eux; \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN ln -s $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini
+RUN sed -ri -e 's/^error_reporting\s*=.*/error_reporting = E_ALL & ~E_NOTICE/' $PHP_INI_DIR/php.ini
 COPY docker/php/conf.d/api-platform.prod.ini $PHP_INI_DIR/conf.d/api-platform.ini
 
 RUN set -eux; \

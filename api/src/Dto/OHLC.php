@@ -7,6 +7,11 @@ use DateTimeImmutable;
 class OHLC
 {
     /**
+     * @var int
+     */
+    private $providerId;
+
+    /**
      * @var string
      */
     private $symbol;
@@ -39,7 +44,7 @@ class OHLC
     /**
      * @var string
      */
-    private $volume24Hours;
+    private $vol24Hours;
 
     /**
      * @var string
@@ -55,6 +60,26 @@ class OHLC
      * @var DateTimeImmutable
      */
     private $createdAt;
+
+    /**
+     * @return int
+     */
+    public function getProviderId(): int
+    {
+        return $this->providerId;
+    }
+
+    /**
+     * @param int $providerId
+     * @return OHLC
+     */
+    public function setProviderId(int $providerId): self
+    {
+        $this->providerId = $providerId;
+
+        return $this;
+    }
+
 
     /**
      * @return string
@@ -173,18 +198,18 @@ class OHLC
     /**
      * @return string
      */
-    public function getVolume24Hours(): string
+    public function getVol24Hours(): string
     {
-        return $this->volume24Hours;
+        return $this->vol24Hours;
     }
 
     /**
-     * @param string $volume24Hours
+     * @param string $vol24Hours
      * @return OHLC
      */
-    public function setVolume24Hours(string $volume24Hours): self
+    public function setVol24Hours(string $vol24Hours): self
     {
-        $this->volume24Hours = $volume24Hours;
+        $this->vol24Hours = $vol24Hours;
 
         return $this;
     }
