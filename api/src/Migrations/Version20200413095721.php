@@ -38,7 +38,6 @@ final class Version20200413095721 extends AbstractMigration
                 `created_at` DATETIME NOT NULL
             );
        ');
-
     }
 
     /**

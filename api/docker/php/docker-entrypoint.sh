@@ -17,6 +17,12 @@ if [ "$1" = 'php-fpm' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
 	setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX var
 	setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX var
 
+    echo "Create db market"
+	until bin/console doctrine:database:create > /dev/null 2>&1; do
+		sleep 1
+	done
+
+    composer run-script --no-dev post-install-cmd;
 	if [ "$APP_ENV" != 'prod' ]; then
 		composer install --prefer-dist --no-progress --no-suggest --no-interaction
 	fi

@@ -44,7 +44,6 @@ services:
   maria-db:
     image: mariadb/columnstore
     environment:
-      - MARIADB_DATABASE=market
       - MARIADB_ROOT_HOST=%
       - MARIADB_ROOT_PASSWORD=!ChangeMe!
     volumes:
@@ -55,7 +54,6 @@ services:
       - target: 3306
         published: 3307
         protocol: tcp
-
 
 volumes:
   db-data: {}

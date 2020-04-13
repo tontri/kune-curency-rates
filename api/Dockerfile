@@ -38,6 +38,7 @@ RUN set -eux; \
 	docker-php-ext-configure zip; \
 	docker-php-ext-install -j$(nproc) \
 		intl \
+		pdo \
 		pdo_pgsql \
 		pdo_mysql \
 		zip \
@@ -51,6 +52,7 @@ RUN set -eux; \
 		apcu \
 		opcache \
 		rdkafka \
+
 	; \
 	\
 	runDeps="$( \
@@ -66,7 +68,6 @@ RUN set -eux; \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN ln -s $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini
-RUN sed -ri -e 's/^error_reporting\s*=.*/error_reporting = E_ALL & ~E_NOTICE/' $PHP_INI_DIR/php.ini
 COPY docker/php/conf.d/api-platform.prod.ini $PHP_INI_DIR/conf.d/api-platform.ini
 
 RUN set -eux; \
@@ -111,7 +112,6 @@ COPY src src/
 RUN set -eux; \
 	mkdir -p var/cache var/log; \
 	composer dump-autoload --classmap-authoritative --no-dev; \
-	composer run-script --no-dev post-install-cmd; \
 	chmod +x bin/console; sync
 VOLUME /srv/api/var
 
