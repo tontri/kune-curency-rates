@@ -1,0 +1,2 @@
+#!/bin/sh
+php /srv/api/bin/console market:get-kuna-data

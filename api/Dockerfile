@@ -19,6 +19,9 @@ RUN apk add --no-cache \
 		file \
 		gettext \
 		git \
+		autoconf \
+		gcc \
+		build-base \
 	;
 
 ARG APCU_VERSION=5.1.18
@@ -29,21 +32,27 @@ RUN set -eux; \
 		libzip-dev \
 		postgresql-dev \
 		zlib-dev \
+		librdkafka-dev \
 	; \
 	\
 	docker-php-ext-configure zip; \
 	docker-php-ext-install -j$(nproc) \
 		intl \
+		pdo \
 		pdo_pgsql \
+		pdo_mysql \
 		zip \
 	; \
 	pecl install \
 		apcu-${APCU_VERSION} \
+        rdkafka \
 	; \
 	pecl clear-cache; \
 	docker-php-ext-enable \
 		apcu \
 		opcache \
+		rdkafka \
+
 	; \
 	\
 	runDeps="$( \
@@ -103,7 +112,6 @@ COPY src src/
 RUN set -eux; \
 	mkdir -p var/cache var/log; \
 	composer dump-autoload --classmap-authoritative --no-dev; \
-	composer run-script --no-dev post-install-cmd; \
 	chmod +x bin/console; sync
 VOLUME /srv/api/var
 
