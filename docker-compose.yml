@@ -23,6 +23,7 @@ services:
     volumes:
       - ./api:/srv/api:rw
       - ./api/docker/php/conf.d/api-platform.dev.ini/:/usr/local/etc/php/conf.d/api-platform.ini
+      - ./api/docker/cron/1min/:/etc/periodic/1min/:ro
       # if you develop on Linux, you may use a bind-mounted host directory instead
       # - ./api/var:/srv/api/var:rw
 

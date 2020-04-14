@@ -18,9 +18,7 @@ if [ "$1" = 'php-fpm' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
 	setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX var
 
     echo "Create db market"
-	until bin/console doctrine:database:create > /dev/null 2>&1; do
-		sleep 1
-	done
+	bin/console doctrine:database:create --if-not-exists > /dev/null 2>&1;
 
     composer run-script --no-dev post-install-cmd;
 	if [ "$APP_ENV" != 'prod' ]; then
@@ -35,6 +33,9 @@ if [ "$1" = 'php-fpm' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
 	if ls -A src/Migrations/*.php > /dev/null 2>&1; then
 		bin/console doctrine:migrations:migrate --no-interaction
 	fi
+
+    echo "*       *       *       *       *       run-parts /etc/periodic/1min" >> /etc/crontabs/root
+	crond
 fi
 
 exec docker-php-entrypoint "$@"
